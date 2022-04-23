@@ -1,5 +1,6 @@
 import io
 import os
+import unicodedata
 
 import pandas as pd
 import requests
@@ -91,11 +92,20 @@ USABLE_COLS = ["Company_Name_",
 #    "Parent_Account_", "Permission",
 
 
-def compare_brand_names(x: str, q: str) -> bool:
+def compare_brand_names(x: str, q: str) -> int:
     "Match query string `q` to brand name `x`."
     # TODO unicode
-    x = x.lower()
-    q = q.lower()
+    def word_split(a):
+        for i in " !&'(),-./":
+            a = a.replace(i, ' ')
+        return a.split()
+
+    x = ' '.join(word_split(x.lower()))
+    q = [x for x in word_split(q.lower()) if x != 'company']
+
+    r = [x.find(qq) > -1 for qq in q]
+    return r.count(True)  # any(r)
+
     return x.find(q) > -1
 
 
@@ -107,9 +117,10 @@ def read_brand_rating(q: str):
 
     # d = data[data["Company_Name_"].str.contains(q)]
     mask = [compare_brand_names(x, q) for x in data["Company_Name_"]]
-    d = data[mask]
+    mask_max = max(mask)
+    d = data[ [(x > 0 and x == mask_max) for x in mask] ]
     count = len(d)
-    print(f'[debug] Search str {q}, got {len(d)} row(s)')
+    print(f'[debug] Search str {q}, got {len(d)} row(s)   -- {mask_max=}')
 
     if count == 0:
         return {"success": False, "error": "Not found"}
