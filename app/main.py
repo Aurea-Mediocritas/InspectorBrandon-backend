@@ -10,6 +10,16 @@ def read_root():
     return {"Hello": "World"}
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Optional[str] = None):
-    return {"item_id": item_id, "q": q}
+@app.get("/barcode")
+def read_barcode(q: str):
+    return {"echo": q}
+
+
+@app.get("/brand_rating")
+def read_barcode(q: str):
+    return {"echo": q}
+
+
+@app.post("/logo")
+def read_barcode():
+    return {"Hello": "world!"}
