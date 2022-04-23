@@ -57,6 +57,11 @@ def read_barcode(q: str):
     return {"brand_name": brand}
 
 
+USABLE_COLS = ('Company_Name_ Country_ '
+               'Reporting_Year Performance_Band'
+               ).split()
+
+
 @app.get("/brand_rating")
 def read_brand_rating(q: str):
     global data
@@ -70,8 +75,15 @@ def read_brand_rating(q: str):
     if count == 0:
         return {"success": False, "error": "Not found"}
     elif count == 1:
+        d = d.to_dict()
+
+        d = {k: v for k, v in d.items() if k in USABLE_COLS}
+
+        # column value: {140: } -- pandas index?
+        d = {k: list(v.values())[0] for k, v in d.items()}
+
         return {"success": True,
-                "brand_rating": d.to_json()}  # TODO: return usable JSON
+                "brand_rating": d}
     else:
         return {"success": False,
                 "Possible_names": d['Company_Name_'].to_list()}
