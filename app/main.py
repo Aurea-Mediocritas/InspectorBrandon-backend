@@ -1,9 +1,14 @@
 from typing import Optional
 
 from fastapi import FastAPI
+from dotenv import load_dotenv
+import os
 
 app = FastAPI()
 
+load_dotenv()
+
+#print(os.getenv("TEST"))
 
 @app.get("/")
 def read_root():
