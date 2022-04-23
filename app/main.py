@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 import requests
 import os
 
+import pandas as pd
+
 app = FastAPI()
 
 load_dotenv()
@@ -14,6 +16,21 @@ load_dotenv()
 # print(os.getenv("TEST"))
 
 use_mock = 1
+
+
+client = bigquery.Client()
+
+
+def download_data():
+    global client
+    db_query = """
+        SELECT *
+        FROM aurea-347907.PhD_ds.emissions
+    """
+    query_job = client.query(db_query)  # Make an API request.
+
+    query_res = query_job.to_dataframe()
+    return query_res
 
 
 @app.get("/")
@@ -42,7 +59,20 @@ def read_barcode(q: str):
 
 @app.get("/brand_rating")
 def read_brand_rating(q: str):
-    return {"echo": q}
+    global data
+    # data.to_csv('dataset.csv')
+    print(data.columns)
+    d = data[data["Company_Name_"].str.contains(q)]
+    count = len(d)
+    print(f'[debug] Search str {q}, got row(s) {len(d)}')
+
+    if count == 0:
+        return {"error": "Not found"}
+    elif count == 1:
+        return {"brand_rating": d.to_json()}
+    else:
+        return {"Possible_names": d['Company_Name_'].to_list()}
+    # return {"echo": q, "cols": list(data.columns)}
 
 
 @app.post("/logo")
@@ -57,4 +87,15 @@ def upload_file(file: bytes = File(...)):
 
     if response.error.message:
         return {"error": f'{response.error.message}'}
-    return {"brand": logo.description}
+    return {"file": logo.description}
+
+
+try:
+    # print('Downloading whole db...')
+    # data = download_data()
+    data = pd.read_csv('dataset.csv')
+    print('\n   Loaded dataset.csv \n')
+    print('got', len(data))
+except FileNotFoundError as e:
+    print(e)
+    print('\n dataset.csv not found (DB cache) \n')
