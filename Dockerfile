@@ -15,4 +15,5 @@ COPY dataset.csv /code
 # CMD ["python", "/code/cache-gcp-to-csv.py"]
 #
 #CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "$PORT"]
-CMD ["gunicorn", "--bind", ":$PORT", "--workers", "1", "--worker-class", "uvicorn.workers.UvicornWorker",  "--threads", "8", "app.main:app"]
+#CMD ["gunicorn", "--bind", ":$PORT", "--workers", "1", "--worker-class", "uvicorn.workers.UvicornWorker",  "--threads", "8", "app.main:app"]
+CMD exec gunicorn --bind :$PORT --workers 1 --worker-class uvicorn.workers.UvicornWorker  --threads 8 app.main:app
