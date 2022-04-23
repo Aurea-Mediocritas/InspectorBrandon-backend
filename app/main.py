@@ -61,6 +61,22 @@ def read_barcode(q: str):
     # return {"brand_name": brand}
 
 
+@app.post("/barcode_photo")
+def upload_barcode_photo(file: bytes = File(...)):
+
+    raise NotImplementedError()
+
+    image = vision.Image(content=file)
+
+    if response.error.message:
+        return {"success": False,
+                "error": f'{response.error.message}'}
+    else:
+        return read_brand_rating(logo.description)
+        return {"success": True,
+                "name": logo.description}
+
+
 USABLE_COLS = ["Company_Name_",
                "Account_Number", "Country_",
                "Reporting_Year", "Ticker_Symbol_",
