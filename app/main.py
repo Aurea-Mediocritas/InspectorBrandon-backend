@@ -1,4 +1,6 @@
 from typing import Optional
+from google.cloud import vision
+import io
 
 from fastapi import FastAPI, File
 from dotenv import load_dotenv
@@ -28,6 +30,8 @@ def read_barcode(q: str):
             brand = "Google"
         elif(q == "9780140157374"):
             brand = "Microsoft"
+        elif(q == "5449000000966"):
+            brand = "Coca Cola Company"
         else:
             brand = "Unknown"
     else:
@@ -44,4 +48,14 @@ def read_barcode(q: str):
 
 @app.post("/logo")
 def upload_file(file: bytes = File(...)):
-    return {"file": len(file)}
+
+    client = vision.ImageAnnotatorClient()
+    image = vision.Image(content=file)
+
+    response = client.logo_detection(image=image)
+    logos = response.logo_annotations
+    logo = logos[0]
+
+    if response.error.message:
+        return {"error": f'{response.error.message}'}
+    return {"file": logo.description}
