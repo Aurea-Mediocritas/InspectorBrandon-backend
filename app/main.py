@@ -55,7 +55,8 @@ def read_barcode(q: str):
         r = requests.get(url=url)
         brand = r.json()['products'][0]['brand']
 
-    return {"brand_name": brand}
+    return read_brand_rating(brand)
+    # return {"brand_name": brand}
 
 
 USABLE_COLS = ["Company_Name_",
@@ -124,6 +125,7 @@ def upload_file(file: bytes = File(...)):
         return {"success": False,
                 "error": f'{response.error.message}'}
     else:
+        return read_brand_rating(logo.description)
         return {"success": True,
                 "name": logo.description}
 
