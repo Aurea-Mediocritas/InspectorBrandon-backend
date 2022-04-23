@@ -119,8 +119,11 @@ def upload_file(file: bytes = File(...)):
     logo = logos[0]
 
     if response.error.message:
-        return {"error": f'{response.error.message}'}
-    return {"file": logo.description}
+        return {"success": False,
+                "error": f'{response.error.message}'}
+    else:
+        return {"success": True,
+                "name": logo.description}
 
 
 try:
