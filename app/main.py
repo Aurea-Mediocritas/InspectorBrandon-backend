@@ -57,4 +57,4 @@ def upload_file(file: bytes = File(...)):
 
     if response.error.message:
         return {"error": f'{response.error.message}'}
-    return {"file": logo.description}
+    return {"brand": logo.description}
