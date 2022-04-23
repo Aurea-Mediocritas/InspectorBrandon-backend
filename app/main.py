@@ -60,19 +60,21 @@ def read_barcode(q: str):
 @app.get("/brand_rating")
 def read_brand_rating(q: str):
     global data
-    # data.to_csv('dataset.csv')
-    print(data.columns)
+    # data.to_csv('dataset.csv')  # Dump database
+    # print(data.columns)
+
     d = data[data["Company_Name_"].str.contains(q)]
     count = len(d)
-    print(f'[debug] Search str {q}, got row(s) {len(d)}')
+    print(f'[debug] Search str {q}, got {len(d)} row(s)')
 
     if count == 0:
-        return {"error": "Not found"}
+        return {"success": False, "error": "Not found"}
     elif count == 1:
-        return {"brand_rating": d.to_json()}
+        return {"success": True,
+                "brand_rating": d.to_json()}  # TODO: return usable JSON
     else:
-        return {"Possible_names": d['Company_Name_'].to_list()}
-    # return {"echo": q, "cols": list(data.columns)}
+        return {"success": False,
+                "Possible_names": d['Company_Name_'].to_list()}
 
 
 @app.post("/logo")
@@ -94,8 +96,8 @@ try:
     # print('Downloading whole db...')
     # data = download_data()
     data = pd.read_csv('dataset.csv')
-    print('\n   Loaded dataset.csv \n')
-    print('got', len(data))
+    print('\n   Loaded dataset.csv ')
+    print('   got', len(data), ' rows\n')
 except FileNotFoundError as e:
     print(e)
     print('\n dataset.csv not found (DB cache) \n')
