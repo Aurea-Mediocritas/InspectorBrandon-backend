@@ -136,16 +136,21 @@ def upload_file(file: bytes = File(...)):
     image = vision.Image(content=file)
 
     response = client.logo_detection(image=image)
-    logos = response.logo_annotations
-    logo = logos[0]  # TODO: Error if more than 1 upload?
-
     if response.error.message:
         return {"success": False,
                 "error": f'{response.error.message}'}
-    else:
-        return read_brand_rating(logo.description)
-        return {"success": True,
-                "name": logo.description}
+
+    logos = response.logo_annotations
+    if len(logos) == 0:
+        return {"success": False,
+                "error": "No logos found"}
+
+    logo = logos[0]  # TODO: Error if more than 1 upload?
+
+    print(f'Found OK logo: {logo.description}')
+    return read_brand_rating(logo.description)
+    # return {"success": True,
+    # "name": logo.description}
 
 
 try:
