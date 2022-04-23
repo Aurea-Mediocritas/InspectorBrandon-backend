@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, File,
 from dotenv import load_dotenv
 import requests
 import os
@@ -43,5 +43,5 @@ def read_barcode(q: str):
 
 
 @app.post("/logo")
-def read_barcode():
+def upload_file(file: bytes = File(...)):
     return {"Hello": "world!"}
