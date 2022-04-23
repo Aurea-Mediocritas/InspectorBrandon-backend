@@ -1,4 +1,5 @@
 import io
+import json
 import os
 import unicodedata
 
@@ -130,8 +131,20 @@ def read_brand_rating(q: str):
 
         d = {k: v for k, v in d.items() if k in USABLE_COLS}
 
+        # from pprint import pprint
+        # pprint(d)
+
         # column value: {140: } -- pandas index?
         d = {k: list(v.values())[0] for k, v in d.items()}
+        d = {k: (v if str(v).lower() != 'nan' else None) for k, v in d.items()}
+
+        # print('\n               Trying to print\n')
+        # try:
+            # Strange, this line can encode nan in JSON
+            # print('sukces! \n ',
+                #   json.dumps(d))
+        # except ValueError:
+            # print('\n - - xd - - \n')
 
         return {"success": True,
                 "brand_rating": d}
