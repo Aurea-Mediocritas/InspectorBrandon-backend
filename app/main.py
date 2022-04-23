@@ -57,9 +57,18 @@ def read_barcode(q: str):
     return {"brand_name": brand}
 
 
-USABLE_COLS = ('Company_Name_ Country_ '
-               'Reporting_Year Performance_Band'
-               ).split()
+USABLE_COLS = ["Company_Name_",
+               "Account_Number", "Country_",
+               "Reporting_Year", "Ticker_Symbol_",
+               "ISIN_",
+               "Disclosure_Score", "Performance_Band",
+               "Response_Status",
+               "Scope_1__metric_tonnes_CO2e_",
+               "Scope_2__metric_tonnes_CO2e_",
+               "Country_Location",
+               ]
+# ValueError: Out of range float values are not JSON compliant
+#    "Parent_Account_", "Permission",
 
 
 @app.get("/brand_rating")
@@ -75,6 +84,7 @@ def read_brand_rating(q: str):
     if count == 0:
         return {"success": False, "error": "Not found"}
     elif count == 1:
+        # return list(d.columns)
         d = d.to_dict()
 
         d = {k: v for k, v in d.items() if k in USABLE_COLS}
