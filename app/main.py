@@ -37,11 +37,12 @@ def read_barcode(q: str):
         url = f"https://api.barcodelookup.com/v3/products?barcode=9780140157376&formatted=y&key={os.getenv('BARCODE_LOOKUP_API_KEY')}"
         r = requests.get(url=url)
         brand = r.json()['products'][0]['brand']
-    return {"echo": brand}
+    
+    return {"brand_name": brand}
 
 
 @app.get("/brand_rating")
-def read_barcode(q: str):
+def read_brand_rating(q: str):
     return {"echo": q}
 
 
