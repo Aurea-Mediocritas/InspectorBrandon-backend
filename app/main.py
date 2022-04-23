@@ -71,13 +71,22 @@ USABLE_COLS = ["Company_Name_",
 #    "Parent_Account_", "Permission",
 
 
+def compare_brand_names(x: str, q: str):
+    # TODO unicode
+    x = x.lower()
+    q = q.lower()
+    return x.find(q) > -1
+
+
 @app.get("/brand_rating")
 def read_brand_rating(q: str):
     global data
     # data.to_csv('dataset.csv')  # Dump database
     # print(data.columns)
 
-    d = data[data["Company_Name_"].str.contains(q)]
+    # d = data[data["Company_Name_"].str.contains(q)]
+    mask = [compare_brand_names(x, q) for x in data["Company_Name_"]]
+    d = data[mask]
     count = len(d)
     print(f'[debug] Search str {q}, got {len(d)} row(s)')
 
