@@ -1,17 +1,17 @@
-from typing import Optional
-from google.cloud import bigquery, vision
 import io
-
-from fastapi import FastAPI, File
-from dotenv import load_dotenv
-import requests
 import os
 
 import pandas as pd
+import requests
+from dotenv import load_dotenv
+from fastapi import FastAPI, File
+from google.cloud import bigquery, vision
 
 app = FastAPI()
 
 load_dotenv()
+
+BARCODE_API_KEY = os.getenv('BARCODE_LOOKUP_API_KEY')
 
 # print(os.getenv("TEST"))
 
@@ -50,7 +50,8 @@ def read_barcode(q: str):
         else:
             brand = "Unknown"
     else:
-        url = f"https://api.barcodelookup.com/v3/products?barcode=9780140157376&formatted=y&key={os.getenv('BARCODE_LOOKUP_API_KEY')}"
+        # q = 9780140157376
+        url = f"https://api.barcodelookup.com/v3/products?barcode={q}&formatted=y&key={BARCODE_API_KEY}"
         r = requests.get(url=url)
         brand = r.json()['products'][0]['brand']
 
@@ -71,7 +72,8 @@ USABLE_COLS = ["Company_Name_",
 #    "Parent_Account_", "Permission",
 
 
-def compare_brand_names(x: str, q: str):
+def compare_brand_names(x: str, q: str) -> bool:
+    "Match query string `q` to brand name `x`."
     # TODO unicode
     x = x.lower()
     q = q.lower()
@@ -116,7 +118,7 @@ def upload_file(file: bytes = File(...)):
 
     response = client.logo_detection(image=image)
     logos = response.logo_annotations
-    logo = logos[0]
+    logo = logos[0]  # TODO: Error if more than 1 upload?
 
     if response.error.message:
         return {"success": False,
