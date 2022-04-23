@@ -18,19 +18,19 @@ load_dotenv()
 use_mock = 1
 
 
-client = bigquery.Client()
+# client = bigquery.Client()
 
 
-def download_data():
-    global client
-    db_query = """
-        SELECT *
-        FROM aurea-347907.PhD_ds.emissions
-    """
-    query_job = client.query(db_query)  # Make an API request.
+# def download_data():   # Use cache-gcp-to-csv.py
+#     global client
+#     db_query = """
+#         SELECT *
+#         FROM aurea-347907.PhD_ds.emissions
+#     """
+#     query_job = client.query(db_query)  # Make an API request.
 
-    query_res = query_job.to_dataframe()
-    return query_res
+#     query_res = query_job.to_dataframe()
+#     return query_res
 
 
 @app.get("/")
