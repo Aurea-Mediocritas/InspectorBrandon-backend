@@ -1,12 +1,11 @@
 from typing import Optional
+from google.cloud import bigquery, vision
+import io
 
 from fastapi import FastAPI, File
 from dotenv import load_dotenv
 import requests
 import os
-
-from google.cloud import vision
-from google.cloud import bigquery
 
 app = FastAPI()
 
@@ -37,7 +36,7 @@ def read_barcode(q: str):
         url = f"https://api.barcodelookup.com/v3/products?barcode=9780140157376&formatted=y&key={os.getenv('BARCODE_LOOKUP_API_KEY')}"
         r = requests.get(url=url)
         brand = r.json()['products'][0]['brand']
-    
+
     return {"brand_name": brand}
 
 
@@ -48,4 +47,14 @@ def read_brand_rating(q: str):
 
 @app.post("/logo")
 def upload_file(file: bytes = File(...)):
-    return {"file": len(file)}
+
+    client = vision.ImageAnnotatorClient()
+    image = vision.Image(content=file)
+
+    response = client.logo_detection(image=image)
+    logos = response.logo_annotations
+    logo = logos[0]
+
+    if response.error.message:
+        return {"error": f'{response.error.message}'}
+    return {"file": logo.description}
