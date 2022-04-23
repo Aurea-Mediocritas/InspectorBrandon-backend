@@ -47,6 +47,8 @@ def read_barcode(q: str):
             brand = "Google"
         elif(q == "9780140157374"):
             brand = "Microsoft"
+        elif(q == "5449000000996"):
+            brand = "Coca-Cola"
         else:
             brand = "Unknown"
     else:
